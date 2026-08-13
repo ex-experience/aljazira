@@ -15,6 +15,12 @@ try { initialSave = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catc
 const params = new URLSearchParams(location.search);
 let SEED = Number(params.get('seed')) || initialSave?.seed || 2030;
 const IS_TOUCH = ('ontouchstart' in window) || navigator.maxTouchPoints > 0 || matchMedia('(pointer:coarse)').matches;
+const QUALITY = localStorage.getItem('ex.aljazira.quality') || (IS_TOUCH ? 'balanced' : 'high');
+const QUALITY_PROFILE = {
+  performance:{mobilePixel:0.9,desktopPixel:1.0,shadows:false},
+  balanced:{mobilePixel:1.15,desktopPixel:1.35,shadows:true},
+  high:{mobilePixel:1.35,desktopPixel:1.8,shadows:true}
+}[QUALITY] || {mobilePixel:1.15,desktopPixel:1.35,shadows:true};
 let gameActive = false;
 let gameStartedAt = 0;
 
@@ -28,8 +34,8 @@ camera.position.set(0, 18, 0);
 
 const renderer = new THREE.WebGLRenderer({antialias:true, powerPreference:'high-performance'});
 renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, IS_TOUCH ? 1.35 : 1.8));
-renderer.shadowMap.enabled = true;
+renderer.setPixelRatio(Math.min(devicePixelRatio, IS_TOUCH ? QUALITY_PROFILE.mobilePixel : QUALITY_PROFILE.desktopPixel));
+renderer.shadowMap.enabled = QUALITY_PROFILE.shadows;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -47,11 +53,14 @@ scene.add(sun);
 const controls = new PointerLockControls(camera, renderer.domElement);
 
 function startPlay(){
-  intro.style.display='none';
+  if(gameActive) return;
   gameActive=true;
   gameStartedAt=performance.now();
+  document.body.classList.add('in-game');
+  intro?.classList.add('intro-exit');
+  setTimeout(()=>{ if(intro) intro.style.display='none'; }, 360);
   saveGame(true);
-  if(!IS_TOUCH) controls.lock();
+  if(!IS_TOUCH) setTimeout(()=>controls.lock(),80);
 }
 startBtn.onclick=startPlay;
 if(initialSave){

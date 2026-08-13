@@ -14,6 +14,9 @@
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preload" as="image" href="./assets/menu-cover.webp" type="image/webp">
+  <meta property="og:image" content="./assets/menu-cover.jpg" />
+  <meta name="twitter:image" content="./assets/menu-cover.jpg" />
   <style>
     :root{
       --ink:#0b0d0c; --paper:#f0ede5; --sand:#c79f67; --mint:#69f0c8; --red:#7d2733;
@@ -78,21 +81,319 @@
     #mobile .reload{right:105px;bottom:135px}
     #mobile .swap{right:105px;bottom:210px}
 
+
+    /* ===== RC2 COVER MENU ===== */
+    body:not(.in-game) canvas,
+    body:not(.in-game) #ui,
+    body:not(.in-game) #pause,
+    body:not(.in-game) #crosshair,
+    body:not(.in-game) #hitFlash,
+    body:not(.in-game) #modeBadge,
+    body:not(.in-game) #missionBanner,
+    body:not(.in-game) #combatHud,
+    body:not(.in-game) #weaponHud,
+    body:not(.in-game) #mobile,
+    body:not(.in-game) #buildTag,
+    body:not(.in-game) #saveToast{
+      opacity:0!important;
+      visibility:hidden!important;
+      pointer-events:none!important;
+    }
+
+    #intro{
+      position:fixed;
+      inset:0;
+      z-index:90;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:0;
+      overflow:hidden;
+      background:#050a0a;
+      isolation:isolate;
+    }
+    #intro::before{
+      content:"";
+      position:absolute;
+      inset:-40px;
+      z-index:-2;
+      background:
+        linear-gradient(rgba(2,9,10,.36),rgba(2,9,10,.58)),
+        url("./assets/menu-cover.webp") center/cover no-repeat;
+      filter:blur(22px) saturate(.95);
+      transform:scale(1.08);
+    }
+    #intro::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 50% 48%,transparent 28%,rgba(0,0,0,.16) 68%,rgba(0,0,0,.55) 100%),
+        linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.24));
+    }
+    #intro.intro-exit{
+      opacity:0;
+      transform:scale(1.018);
+      transition:opacity .34s ease,transform .38s ease;
+      pointer-events:none;
+    }
+
+    #coverFrame{
+      position:relative;
+      width:min(100vw,calc(100svh * 1122 / 1402));
+      aspect-ratio:1122/1402;
+      flex:0 0 auto;
+      filter:drop-shadow(0 18px 60px rgba(0,0,0,.55));
+    }
+    #coverFrame picture,
+    #coverFrame img{
+      display:block;
+      width:100%;
+      height:100%;
+    }
+    #coverFrame img{
+      object-fit:contain;
+      object-position:center;
+      pointer-events:none;
+      -webkit-user-drag:none;
+    }
+
+    .menuHotspot{
+      position:absolute;
+      appearance:none;
+      -webkit-appearance:none;
+      border:1px solid transparent;
+      background:transparent;
+      color:transparent;
+      font-size:0;
+      padding:0;
+      margin:0;
+      z-index:5;
+      cursor:pointer;
+      border-radius:14px;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+      outline:none;
+    }
+    .menuHotspot::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:inherit;
+      opacity:0;
+      border:2px solid rgba(75,245,246,.92);
+      box-shadow:
+        0 0 0 2px rgba(3,17,20,.46) inset,
+        0 0 18px rgba(39,232,238,.55),
+        0 0 42px rgba(39,232,238,.24);
+      transition:opacity .14s ease,transform .14s ease;
+    }
+    .menuHotspot:hover::after,
+    .menuHotspot:focus-visible::after,
+    .menuHotspot.pressed::after{
+      opacity:1;
+      transform:scale(1.012);
+    }
+    .menuHotspot:active{transform:scale(.988)}
+
+    /* Hotspots aligned to the baked RC2 artwork (1122 x 1402). */
+    #start{left:24.25%;top:65.55%;width:49.0%;height:6.75%}
+    #newWorld{left:26.15%;top:73.15%;width:45.1%;height:4.35%}
+    #howToPlay{left:25.65%;top:78.30%;width:23.4%;height:4.25%}
+    #settingsBtn{left:50.45%;top:78.30%;width:23.1%;height:4.25%}
+
+    .modeHotspot{top:84.35%;height:7.7%;width:10.6%;border-radius:18px}
+    #modeOpen{left:25.8%}
+    #modeSurvival{left:38.8%}
+    #modeCreative{left:51.8%}
+    #modeCombat{left:64.8%}
+
+    #saveState{
+      position:absolute;
+      left:50%;
+      bottom:1.2%;
+      transform:translateX(-50%);
+      width:72%;
+      text-align:center;
+      color:rgba(189,255,244,.84);
+      font:9px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;
+      letter-spacing:.06em;
+      z-index:6;
+      text-shadow:0 2px 8px #000;
+      pointer-events:none;
+    }
+
+    .menuModal{
+      position:fixed;
+      inset:0;
+      z-index:120;
+      display:none;
+      place-items:center;
+      padding:18px;
+      background:rgba(0,7,9,.72);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+    .menuModal.open{display:grid}
+    .menuPanel{
+      position:relative;
+      width:min(560px,94vw);
+      max-height:min(720px,88svh);
+      overflow:auto;
+      border-radius:22px;
+      padding:24px;
+      background:
+        linear-gradient(180deg,rgba(7,23,27,.96),rgba(4,12,15,.98));
+      border:1px solid rgba(84,241,241,.36);
+      box-shadow:0 22px 80px rgba(0,0,0,.55),0 0 45px rgba(0,229,232,.10);
+      direction:rtl;
+    }
+    .menuPanel h2{
+      margin:0 0 8px;
+      font-size:24px;
+      letter-spacing:.02em;
+    }
+    .menuPanel .kicker{
+      color:#55f0e7;
+      font:11px ui-monospace,SFMono-Regular,Consolas,monospace;
+      letter-spacing:.15em;
+      direction:ltr;
+      text-align:left;
+    }
+    .menuPanel p,.menuPanel li{color:#d8dfdd;line-height:1.8;font-size:14px}
+    .menuPanel ul{padding-right:22px}
+    .closeModal{
+      position:absolute;
+      top:14px;
+      left:14px;
+      width:40px;height:40px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      cursor:pointer;
+      font-size:18px;
+    }
+    .qualityGrid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:16px;
+      direction:ltr;
+    }
+    .qualityBtn{
+      min-height:56px;
+      border-radius:13px;
+      border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.05);
+      color:#fff;
+      cursor:pointer;
+      font-weight:800;
+    }
+    .qualityBtn.active{
+      border-color:#57eee5;
+      background:rgba(57,226,218,.13);
+      box-shadow:0 0 20px rgba(57,226,218,.12);
+      color:#7bfff5;
+    }
+    .menuAction{
+      width:100%;
+      margin-top:12px;
+      min-height:48px;
+      border:1px solid rgba(72,238,231,.5);
+      border-radius:13px;
+      background:rgba(46,224,215,.12);
+      color:#dffffc;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .modeTitle{color:#61f4ea;font-weight:900}
+    .srOnly{
+      position:absolute!important;
+      width:1px!important;height:1px!important;
+      padding:0!important;margin:-1px!important;
+      overflow:hidden!important;clip:rect(0,0,0,0)!important;
+      white-space:nowrap!important;border:0!important;
+    }
+
+    @media (max-width:600px){
+      #coverFrame{
+        width:100vw;
+        max-height:100svh;
+      }
+      .menuHotspot::after{border-width:1px}
+      #saveState{font-size:7.5px;bottom:.8%;width:82%}
+      .menuPanel{padding:22px 18px}
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      #intro.intro-exit,.menuHotspot::after{transition:none!important}
+    }
+
 </style>
 </head>
 <body>
-<div id="intro">
-  <div class="card glass">
-    <div class="eyebrow">フサム | experience™ // EXPERIENCE 003 // V2.1 STABLE</div>
-    <h1>ALJAZIRA<br>العالم الذي نبنيه</h1>
-    <div class="lead">Voxel sandbox عربي أصلي، مستوحى من جغرافية المملكة: رمال الربع الخالي، جبال الحجاز، هضاب نجد، الحرات البركانية، الواحات والساحل الأحمر.</div>
-    <div class="quote"><b>ليست نسخة من لعبة أخرى.</b><br>إنها منصة بناء وبقاء واستكشاف عربية بهويتها وقواعدها وعالمها الخاص.</div>
-    <div class="menuRow">
-      <button id="start">ادخل المملكة // ENTER WORLD</button>
-      <button id="newWorld" class="secondary">عالم جديد // NEW WORLD</button>
+<div id="intro" aria-label="EX ALJAZIRA game menu">
+  <div id="coverFrame">
+    <picture>
+      <source srcset="./assets/menu-cover.webp" type="image/webp">
+      <img src="./assets/menu-cover.jpg" alt="EX ALJAZIRA — Build, Survive, Defend the Island" width="1122" height="1402" fetchpriority="high">
+    </picture>
+
+    <button id="start" class="menuHotspot" aria-label="Continue world"><span class="srOnly">CONTINUE // تابع العالم</span></button>
+    <button id="newWorld" class="menuHotspot" aria-label="Create new world"><span class="srOnly">NEW WORLD // عالم جديد</span></button>
+    <button id="howToPlay" class="menuHotspot" aria-label="How to play"><span class="srOnly">HOW TO PLAY // طريقة اللعب</span></button>
+    <button id="settingsBtn" class="menuHotspot" aria-label="Settings"><span class="srOnly">SETTINGS // الإعدادات</span></button>
+
+    <button id="modeOpen" class="menuHotspot modeHotspot" aria-label="Open world information"><span class="srOnly">OPEN WORLD</span></button>
+    <button id="modeSurvival" class="menuHotspot modeHotspot" aria-label="Survival information"><span class="srOnly">SURVIVAL</span></button>
+    <button id="modeCreative" class="menuHotspot modeHotspot" aria-label="Creative information"><span class="srOnly">CREATIVE</span></button>
+    <button id="modeCombat" class="menuHotspot modeHotspot" aria-label="Combat information"><span class="srOnly">COMBAT</span></button>
+
+    <div id="saveState">CHECKING LOCAL WORLD...</div>
+  </div>
+</div>
+
+<div id="helpModal" class="menuModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="menuPanel">
+    <button class="closeModal" data-close="helpModal" aria-label="Close">×</button>
+    <div class="kicker">EXPERIENCE 003 // FIELD GUIDE</div>
+    <h2 id="helpTitle">طريقة اللعب // HOW TO PLAY</h2>
+    <ul>
+      <li><b>الكمبيوتر:</b> WASD للحركة، SHIFT للركض، SPACE للقفز.</li>
+      <li><b>القتال:</b> Left Click للإطلاق، R لإعادة التعبئة، Q لتبديل السلاح، F للتحصين.</li>
+      <li><b>البناء:</b> Middle Click لتكسير الكتلة، Right Click للبناء، والأرقام 1–7 لاختيار الخامة.</li>
+      <li><b>الجوال:</b> العصا اليسرى للحركة، اليمنى للنظر، مع FIRE / R / Q والقفز والبناء والتكسير.</li>
+      <li>العالم يحفظ تقدمك محليًا تلقائيًا على هذا الجهاز.</li>
+    </ul>
+    <button class="menuAction" data-close="helpModal">فهمت // READY</button>
+  </div>
+</div>
+
+<div id="settingsModal" class="menuModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="menuPanel">
+    <button class="closeModal" data-close="settingsModal" aria-label="Close">×</button>
+    <div class="kicker">DISPLAY // PERFORMANCE</div>
+    <h2 id="settingsTitle">الإعدادات // SETTINGS</h2>
+    <p>اختر مستوى الرسوم. سيتم حفظ الاختيار على جهازك ويُطبق عند بدء/إعادة تحميل العالم.</p>
+    <div class="qualityGrid">
+      <button class="qualityBtn" data-quality="performance">PERFORMANCE</button>
+      <button class="qualityBtn" data-quality="balanced">BALANCED</button>
+      <button class="qualityBtn" data-quality="high">HIGH</button>
     </div>
-    <div id="saveState">NO LOCAL SAVE YET</div>
-    <div class="fine">WASD حركة · SHIFT ركض · SPACE قفز · LEFT إطلاق · MIDDLE كسر · RIGHT بناء · R تعبئة · Q سلاح · F تحصين</div>
+    <button id="applySettings" class="menuAction">APPLY & RELOAD // تطبيق</button>
+  </div>
+</div>
+
+<div id="modeModal" class="menuModal" role="dialog" aria-modal="true" aria-labelledby="modeTitle">
+  <div class="menuPanel">
+    <button class="closeModal" data-close="modeModal" aria-label="Close">×</button>
+    <div class="kicker">WORLD SYSTEM</div>
+    <h2 id="modeTitle" class="modeTitle">ALJAZIRA</h2>
+    <p id="modeDescription"></p>
+    <button class="menuAction" data-close="modeModal">CLOSE // إغلاق</button>
   </div>
 </div>
 
@@ -120,6 +421,7 @@
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/"}}
 </script>
 <div id="fatal"><div class="fatalCard"><h2>تعذر تشغيل العالم</h2><p>أعد تحميل الصفحة أو جرّب متصفحًا حديثًا. إذا استمرت المشكلة أرسل نص الخطأ أدناه.</p><code id="fatalText"></code></div></div>
+<script src="./menu-ui.js" defer></script>
 <script type="module" src="./bootstrap.js"></script>
 </body>
 </html>

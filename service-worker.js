@@ -1,5 +1,5 @@
-const CACHE='ex-aljazira-rc1-20260813';
-const CORE=['./','./index.html','./bootstrap.js','./game.js','./manifest.webmanifest','./assets/icon-192.png','./assets/icon-512.png','./version.json'];
+const CACHE='ex-aljazira-rc2-ui-20260813';
+const CORE=['./','./index.html','./bootstrap.js','./game.js','./manifest.webmanifest','./assets/icon-192.png','./assets/icon-512.png','./version.json','./menu-ui.js','./assets/menu-cover.webp','./assets/menu-cover.jpg'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
