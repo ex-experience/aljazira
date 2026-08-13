@@ -1,25 +1,58 @@
-const CACHE='ex-aljazira-rc2-ui-20260813';
-const CORE=['./','./index.html','./bootstrap.js','./game.js','./manifest.webmanifest','./assets/icon-192.png','./assets/icon-512.png','./version.json','./menu-ui.js','./assets/menu-cover.webp','./assets/menu-cover.jpg'];
+const CACHE='ex-aljazira-rc2-1-hotfix-20260813';
+const CORE=[
+  './','./index.html','./bootstrap.js','./game.js','./manifest.webmanifest',
+  './assets/icon-192.png','./assets/icon-512.png','./version.json',
+  './menu-ui.js','./assets/menu-cover.webp','./assets/menu-cover.jpg'
+];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
+  event.waitUntil((async()=>{
+    const cache=await caches.open(CACHE);
+    await Promise.allSettled(CORE.map(async url=>{
+      const res=await fetch(url,{cache:'reload'});
+      if(res.ok) await cache.put(url,res.clone());
+    }));
+    await self.skipWaiting();
+  })());
 });
+
 self.addEventListener('activate',event=>{
-  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+  event.waitUntil((async()=>{
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)));
+    await self.clients.claim();
+  })());
 });
+
 self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET')return;
+  if(event.request.method!=='GET') return;
   const url=new URL(event.request.url);
+
   if(url.origin===location.origin){
-    event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request).then(res=>{
-      const copy=res.clone();caches.open(CACHE).then(c=>c.put(event.request,copy));return res;
-    }).catch(()=>caches.match('./index.html'))));
+    event.respondWith((async()=>{
+      try{
+        const res=await fetch(event.request,{cache:'no-store'});
+        if(res.ok){
+          const cache=await caches.open(CACHE);
+          cache.put(event.request,res.clone());
+        }
+        return res;
+      }catch(err){
+        return (await caches.match(event.request)) ||
+               (event.request.mode==='navigate' ? await caches.match('./index.html') : Response.error());
+      }
+    })());
     return;
   }
+
   if(url.hostname==='cdn.jsdelivr.net'){
-    event.respondWith(caches.open(CACHE).then(async c=>{
-      const cached=await c.match(event.request);if(cached)return cached;
-      const res=await fetch(event.request);if(res.ok)c.put(event.request,res.clone());return res;
-    }));
+    event.respondWith((async()=>{
+      const cache=await caches.open(CACHE);
+      const cached=await cache.match(event.request);
+      if(cached) return cached;
+      const res=await fetch(event.request);
+      if(res.ok) cache.put(event.request,res.clone());
+      return res;
+    })());
   }
 });

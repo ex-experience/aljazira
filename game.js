@@ -524,7 +524,8 @@ function lookPad(el){
 
 if(IS_TOUCH){
  qs('#mobile').style.display='block';
- qs('#intro .fine').textContent='الجوال: يسار للحركة، يمين للنظر، FIRE للإطلاق، R تعبئة، Q تبديل، ↑ قفز، − كسر، ＋ بناء.';
+ const introFine=qs('#intro .fine');
+ if(introFine) introFine.textContent='الجوال: يسار للحركة، يمين للنظر، FIRE للإطلاق، R تعبئة، Q تبديل، ↑ قفز، − كسر، ＋ بناء.';
  joystick(qs('#movePad'),(x,y)=>{moveInput.x=x;moveInput.y=y});
  lookPad(qs('#lookPad'));
  const hold=(el,fn)=>{
