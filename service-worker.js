@@ -1,4 +1,4 @@
-const CACHE='ex-aljazira-rc2-1-hotfix-20260813';
+const CACHE='ex-aljazira-rc3-minimal-20260813';
 const CORE=[
   './','./index.html','./bootstrap.js','./game.js','./manifest.webmanifest',
   './assets/icon-192.png','./assets/icon-512.png','./version.json',

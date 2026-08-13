@@ -1,70 +1,58 @@
+(()=>{
+  const $=s=>document.querySelector(s);
 
-(() => {
-  const $ = (s) => document.querySelector(s);
-  const open = (id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.add('open');
-    const focusable = el.querySelector('button');
-    focusable?.focus({preventScroll:true});
-  };
-  const close = (id) => document.getElementById(id)?.classList.remove('open');
-
-  $('#howToPlay')?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); open('helpModal'); });
-  $('#settingsBtn')?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); syncQuality(); open('settingsModal'); });
-
-  document.querySelectorAll('[data-close]').forEach(btn => {
-    btn.addEventListener('click', () => close(btn.dataset.close));
-  });
-  document.querySelectorAll('.menuModal').forEach(modal => {
-    modal.addEventListener('pointerdown', (e) => {
-      if (e.target === modal) close(modal.id);
-    });
+  // Compact mobile icon language.
+  const labels={jumpBtn:'↥',breakBtn:'◇',placeBtn:'＋',fireBtn:'◎',reloadBtn:'↻',swapBtn:'⇄'};
+  Object.entries(labels).forEach(([id,label])=>{
+    const el=document.getElementById(id);
+    if(el){el.textContent=label;el.setAttribute('aria-label',id)}
   });
 
-  const modeCopy = {
-    modeOpen: ['OPEN WORLD', 'استكشف مناطق ALJAZIRA بحرية: الحجاز، نجد، الحرات، الواحات والربع الخالي. العالم يُولد وفق Seed ويحفظ تقدمك محليًا.'],
-    modeSurvival: ['SURVIVAL', 'قاتل، اجمع الموارد، حافظ على الصحة والدرع والطاقة، وابنِ تحصيناتك أثناء موجات التهديد.'],
-    modeCreative: ['CREATIVE', 'مساحة البناء الحر هي اتجاه التطوير القادم. النسخة الحالية تسمح بالبناء والتكسير داخل عالم البقاء.'],
-    modeCombat: ['COMBAT', 'أسلحة EX الأصلية، ذخيرة، Reload، تبديل سلاح، خصوم وموجات قتال ودفاع عن الجزيرة.']
-  };
-  Object.entries(modeCopy).forEach(([id, data]) => {
-    document.getElementById(id)?.addEventListener('click', (e) => {
-      e.preventDefault();
-      $('#modeTitle').textContent = data[0];
-      $('#modeDescription').textContent = data[1];
-      open('modeModal');
-    });
-  });
-
-  const QUALITY_KEY = 'ex.aljazira.quality';
-  function syncQuality(){
-    const q = localStorage.getItem(QUALITY_KEY) || (matchMedia('(pointer:coarse)').matches ? 'balanced' : 'high');
-    document.querySelectorAll('.qualityBtn').forEach(b => b.classList.toggle('active', b.dataset.quality === q));
+  // Materials drawer.
+  let materials=document.getElementById('materialsToggle');
+  if(!materials){
+    materials=document.createElement('button');
+    materials.id='materialsToggle';
+    materials.type='button';
+    materials.textContent='▦';
+    materials.setAttribute('aria-label','مواد البناء');
+    document.body.appendChild(materials);
   }
-  document.querySelectorAll('.qualityBtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      localStorage.setItem(QUALITY_KEY, btn.dataset.quality);
-      syncQuality();
-    });
+  materials.addEventListener('click',e=>{
+    e.preventDefault();e.stopPropagation();
+    document.body.classList.toggle('materials-open');
   });
-  $('#applySettings')?.addEventListener('click', () => location.reload());
-
-  document.querySelectorAll('.menuHotspot').forEach(btn => {
-    btn.addEventListener('pointerdown', () => {
-      btn.classList.add('pressed');
-      setTimeout(() => btn.classList.remove('pressed'), 180);
-    });
+  document.getElementById('hotbar')?.addEventListener('pointerdown',()=>{
+    setTimeout(()=>document.body.classList.remove('materials-open'),180);
   });
 
-  addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.menuModal.open').forEach(m => m.classList.remove('open'));
+  // Keep the baked cover buttons functional without adding visible text.
+  const open=id=>document.getElementById(id)?.classList.add('open');
+  const close=id=>document.getElementById(id)?.classList.remove('open');
+
+  $('#howToPlay')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open('helpModal')});
+  $('#settingsBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();syncQuality();open('settingsModal')});
+  document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>close(b.dataset.close)));
+  document.querySelectorAll('.menuModal').forEach(m=>m.addEventListener('pointerdown',e=>{
+    if(e.target===m)close(m.id);
+  }));
+
+  const QUALITY_KEY='ex.aljazira.quality';
+  function syncQuality(){
+    const q=localStorage.getItem(QUALITY_KEY)||(matchMedia('(pointer:coarse)').matches?'balanced':'high');
+    document.querySelectorAll('.qualityBtn').forEach(b=>b.classList.toggle('active',b.dataset.quality===q));
+  }
+  document.querySelectorAll('.qualityBtn').forEach(b=>b.addEventListener('click',()=>{
+    localStorage.setItem(QUALITY_KEY,b.dataset.quality);
+    syncQuality();
+  }));
+  $('#applySettings')?.addEventListener('click',()=>location.reload());
+
+  addEventListener('keydown',e=>{
+    if(e.key==='Escape'){
+      document.querySelectorAll('.menuModal.open').forEach(m=>m.classList.remove('open'));
+      document.body.classList.remove('materials-open');
     }
-    if (e.key === 'Enter' && !document.querySelector('.menuModal.open') && !document.body.classList.contains('in-game')) {
-      $('#start')?.click();
-    }
   });
-
   syncQuality();
 })();

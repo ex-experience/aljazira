@@ -332,6 +332,250 @@
       #intro.intro-exit,.menuHotspot::after{transition:none!important}
     }
 
+
+/* =========================================================
+   EX™ ALJAZIRA RC3 — CINEMATIC MINIMAL HUD
+   The world is the interface.
+   ========================================================= */
+
+/* START SCREEN: no duplicate UI over baked key art */
+#intro{
+  background:#020607!important;
+  padding:0!important;
+}
+#intro::before{
+  inset:-24px!important;
+  filter:blur(28px) brightness(.40) saturate(.92)!important;
+  background:
+    linear-gradient(rgba(2,7,8,.22),rgba(2,7,8,.32)),
+    url("./assets/menu-cover.webp") center/cover no-repeat!important;
+}
+#intro::after{
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.03) 66%,rgba(0,0,0,.24) 100%)!important;
+}
+#coverFrame{
+  height:100svh!important;
+  width:auto!important;
+  max-width:none!important;
+  aspect-ratio:1122/1402!important;
+  filter:none!important;
+}
+#coverFrame picture,#coverFrame img{width:100%!important;height:100%!important}
+#coverFrame img{object-fit:fill!important}
+
+/* Make the baked cover buttons the only visible UI:
+   HTML hit targets remain real and clickable, but visually invisible. */
+.menuHotspot{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  outline:0!important;
+}
+.menuHotspot::before,.menuHotspot::after{display:none!important}
+#saveState{display:none!important}
+
+/* GAME: remove information walls */
+body.in-game #topbar,
+body.in-game #objective,
+body.in-game #hint,
+body.in-game #modeBadge,
+body.in-game #buildTag,
+body.in-game #cross{
+  display:none!important;
+}
+
+/* Tiny, quiet crosshair */
+#crosshair{
+  width:8px!important;height:8px!important;
+  opacity:.68!important;
+}
+#crosshair::before{
+  left:3.5px!important;top:0!important;
+  width:1px!important;height:8px!important;
+  background:rgba(255,255,255,.92)!important;
+  box-shadow:none!important;
+}
+#crosshair::after{
+  left:0!important;top:3.5px!important;
+  height:1px!important;width:8px!important;
+  background:rgba(255,255,255,.92)!important;
+  box-shadow:none!important;
+}
+
+/* Health / armor / energy = three silent bars only */
+#combatHud{
+  position:fixed!important;
+  left:max(14px,env(safe-area-inset-left))!important;
+  top:max(14px,env(safe-area-inset-top))!important;
+  bottom:auto!important;
+  width:74px!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:5px!important;
+  opacity:.78!important;
+}
+#combatHud>div:not(.meter){display:none!important}
+#combatHud .meter{
+  height:3px!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:99px!important;
+  background:rgba(255,255,255,.10)!important;
+  overflow:hidden!important;
+}
+#combatHud .meter>i{border-radius:99px!important}
+
+/* Weapon HUD = ammo only */
+#weaponHud{
+  position:fixed!important;
+  right:max(14px,env(safe-area-inset-right))!important;
+  top:max(13px,env(safe-area-inset-top))!important;
+  bottom:auto!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  text-shadow:0 2px 12px rgba(0,0,0,.85)!important;
+}
+#weaponName,#weaponHud small{display:none!important}
+#ammo{
+  font:700 15px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  color:rgba(255,255,255,.88)!important;
+}
+
+/* Mission messages only appear briefly and quietly */
+#missionBanner{
+  top:max(17px,env(safe-area-inset-top))!important;
+  max-width:62vw!important;
+  padding:6px 10px!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:rgba(2,8,9,.30)!important;
+  backdrop-filter:blur(9px)!important;
+  -webkit-backdrop-filter:blur(9px)!important;
+  font:700 9px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:.05em!important;
+  color:rgba(255,255,255,.90)!important;
+}
+
+/* Damage is an edge vignette, not a red screen */
+#hitFlash{
+  background:transparent!important;
+  opacity:0;
+  transition:opacity .12s ease!important;
+  box-shadow:inset 0 0 72px rgba(140,0,0,.52);
+}
+#hitFlash.active{opacity:1}
+
+/* Materials are hidden until requested */
+#materialsToggle{
+  display:none;
+  position:fixed;
+  z-index:18;
+  left:50%;
+  bottom:calc(15px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  width:42px;height:42px;
+  border-radius:13px;
+  border:1px solid rgba(255,255,255,.13);
+  background:rgba(2,8,9,.30);
+  color:rgba(255,255,255,.82);
+  font-size:17px;
+  backdrop-filter:blur(9px);
+  -webkit-backdrop-filter:blur(9px);
+  touch-action:manipulation;
+}
+
+/* Desktop hotbar: quiet until hover */
+@media(min-width:821px) and (pointer:fine){
+  body.in-game #hotbar{
+    opacity:.18;
+    transition:opacity .18s ease;
+    background:rgba(0,0,0,.15)!important;
+    border-color:transparent!important;
+  }
+  body.in-game #hotbar:hover{opacity:.95}
+}
+
+/* MOBILE: clean thumb controls */
+@media(max-width:820px),(pointer:coarse){
+  body.in-game #materialsToggle{display:block}
+  body.in-game #hotbar{
+    display:none!important;
+    bottom:calc(66px + env(safe-area-inset-bottom))!important;
+    padding:5px!important;
+    gap:4px!important;
+    background:rgba(2,8,9,.48)!important;
+    border:1px solid rgba(255,255,255,.10)!important;
+    border-radius:14px!important;
+  }
+  body.in-game.materials-open #hotbar{display:flex!important}
+  #hotbar .slot{
+    width:38px!important;height:38px!important;
+    font-size:0!important;
+    border-radius:8px!important;
+    background:rgba(255,255,255,.04)!important;
+  }
+  #hotbar .cube{width:18px!important;height:18px!important;margin:0!important}
+
+  #mobile{z-index:15!important}
+
+  #movePad{
+    left:18px!important;
+    bottom:calc(22px + env(safe-area-inset-bottom))!important;
+    width:108px!important;height:108px!important;
+    background:rgba(0,0,0,.12)!important;
+    border:1px solid rgba(255,255,255,.09)!important;
+  }
+  #movePad .knob{
+    width:42px!important;height:42px!important;
+    background:rgba(255,255,255,.12)!important;
+    border:1px solid rgba(255,255,255,.12)!important;
+  }
+
+  /* Right side = invisible look surface */
+  #lookPad{
+    right:0!important;bottom:0!important;
+    width:55vw!important;height:70vh!important;
+    border:0!important;border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  #lookPad .knob{display:none!important}
+
+  .action{
+    width:42px!important;height:42px!important;
+    background:rgba(2,8,9,.28)!important;
+    border:1px solid rgba(255,255,255,.11)!important;
+    color:rgba(255,255,255,.84)!important;
+    font:500 18px/1 Arial!important;
+    backdrop-filter:blur(8px)!important;
+    -webkit-backdrop-filter:blur(8px)!important;
+  }
+
+  #fireBtn{
+    right:20px!important;
+    bottom:calc(38px + env(safe-area-inset-bottom))!important;
+    width:64px!important;height:64px!important;
+    background:rgba(2,10,11,.36)!important;
+    border:1px solid rgba(98,241,223,.34)!important;
+    color:#8efff0!important;
+    font-size:25px!important;
+  }
+  #jumpBtn{right:28px!important;bottom:calc(116px + env(safe-area-inset-bottom))!important;width:46px!important;height:46px!important}
+  #reloadBtn{right:88px!important;bottom:calc(87px + env(safe-area-inset-bottom))!important}
+  #swapBtn{right:88px!important;bottom:calc(38px + env(safe-area-inset-bottom))!important}
+  #breakBtn{right:138px!important;bottom:calc(87px + env(safe-area-inset-bottom))!important}
+  #placeBtn{right:138px!important;bottom:calc(38px + env(safe-area-inset-bottom))!important}
+
+  #combatHud{width:66px!important}
+}
+
 </style>
 </head>
 <body>
@@ -421,7 +665,7 @@
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/"}}
 </script>
 <div id="fatal"><div class="fatalCard"><h2>تعذر تشغيل العالم</h2><p>أعد تحميل الصفحة أو جرّب متصفحًا حديثًا. إذا استمرت المشكلة أرسل نص الخطأ أدناه.</p><code id="fatalText"></code></div></div>
-<script src="./menu-ui.js" defer></script>
-<script type="module" src="./bootstrap.js"></script>
+<script src="./menu-ui.js?v=3.2.0-rc3" defer></script>
+<script type="module" src="./bootstrap.js?v=3.2.0-rc3"></script>
 </body>
 </html>

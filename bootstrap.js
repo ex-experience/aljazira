@@ -24,10 +24,10 @@ if(intro && !intro.querySelector('.fine')){
 if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
   addEventListener('load',()=>{
     navigator.serviceWorker
-      .register('./service-worker.js?v=3.1.1-hotfix1',{updateViaCache:'none'})
+      .register('./service-worker.js?v=3.2.0-rc3',{updateViaCache:'none'})
       .then(reg=>reg.update())
       .catch(console.warn);
   });
 }
 
-import('./game.js?v=3.1.1-hotfix1').catch(showFatal);
+import('./game.js?v=3.2.0-rc3').catch(showFatal);
