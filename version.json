@@ -1,0 +1,8 @@
+{
+  "name": "EX ALJAZIRA",
+  "channel": "production-rc",
+  "version": "3.0.0-rc.1",
+  "build": "2026.08.13",
+  "saveSchema": 1,
+  "three": "0.178.0"
+}
