@@ -4,63 +4,43 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#061316">
-<title>EX™ ALJAZIRA — BUILD • SURVIVE • DEFEND</title>
+<title>EX™ ALJAZIRA — MAX TECH V2</title>
 <link rel="stylesheet" href="./style.css">
 <link rel="manifest" href="./manifest.webmanifest">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.webgpu.js",
+    "three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.webgpu.js",
+    "three/tsl": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.tsl.js"
+  }
+}
+</script>
 </head>
 <body>
 <div id="app">
-  <section id="menu" class="menu">
-    <img src="./assets/cover-main.webp" class="cover" alt="EX ALJAZIRA">
-    <div class="shade"></div>
-    <div class="brand">フサム | experience™ <span>EX™ PLAYABLE WORLDS</span></div>
-    <div class="menuUI">
-      <div class="build">PRODUCTION MVP // WORLD CORE 01</div>
-      <button class="continue" data-mode="survival">CONTINUE // <b>تابع العالم</b> ›</button>
-      <button data-mode="new">NEW WORLD // عالم جديد ＋</button>
-      <div class="modeGrid">
-        <button data-mode="survival">SURVIVAL<br><small>البقاء</small></button>
-        <button data-mode="creative">CREATIVE<br><small>الإبداع</small></button>
-        <button data-mode="adventure">ADVENTURE<br><small>المغامرة</small></button>
-        <button data-mode="hardcore">HARDCORE<br><small>المتشدد</small></button>
-        <button data-mode="spectator">SPECTATOR<br><small>المشاهد</small></button>
-      </div>
-      <div class="menuActions"><button id="howBtn">HOW TO PLAY</button><button id="settingsBtn">SETTINGS</button></div>
+<section id="menu" class="menu">
+  <img src="./assets/cover-main.webp" class="cover" alt="EX ALJAZIRA">
+  <div class="shade"></div>
+  <div class="brand">フサム | experience™ <span>EX™ PLAYABLE WORLDS</span></div>
+  <div class="menu-ui">
+    <small>MAX TECH V2 // WEBGPU + WEBGL2 FALLBACK // CHUNK STREAMING</small>
+    <button class="primary" data-mode="continue">CONTINUE // تابع العالم</button>
+    <button data-mode="new">NEW WORLD // عالم جديد</button>
+    <div class="modes">
+      <button data-mode="survival">SURVIVAL</button><button data-mode="creative">CREATIVE</button><button data-mode="adventure">ADVENTURE</button><button data-mode="spectator">SPECTATOR</button><button data-mode="hardcore">HARDCORE</button>
     </div>
-  </section>
-
-  <section id="how" class="overlay hidden"><div class="panel"><h2>HOW TO PLAY</h2>
-    <p>اجمع الموارد، ابنِ التحصينات، فعّل شبكة PULSE، واستعد لموجات الغزاة التي تحاول تدمير قلب الجزيرة.</p>
-    <div class="keys"><span>WASD — MOVE</span><span>MOUSE — LOOK</span><span>LMB — MINE / FIRE</span><span>RMB — BUILD</span><span>1–6 — BLOCKS</span><span>SHIFT — SPRINT</span><span>F — PULSE SHOT</span><span>C — CHAT</span></div>
-    <button id="closeHow">READY</button>
-  </div></section>
-
-  <div id="gameRoot" class="hidden"></div>
-  <div id="hud" class="hidden">
-    <div class="bars"><label>HP <i><b id="hp"></b></i></label><label>HUNGER <i><b id="hunger"></b></i></label><label>SHIELD <i><b id="shield"></b></i></label></div>
-    <div class="top"><span id="mode">SURVIVAL</span><b id="objective">FORTIFY THE ISLAND</b><span id="clock">DAY 1 • 08:00</span></div>
-    <div id="crosshair">+</div>
-    <div id="hotbar"></div>
-    <div id="toast"></div>
-    <button id="chatBtn">CHAT</button>
   </div>
-
-  <aside id="chat" class="chat hidden">
-    <header>EX™ GLOBAL CHAT <button id="closeChat">×</button></header>
-    <div id="messages"><p class="system">Global backend is optional; local session chat is active.</p></div>
-    <form id="chatForm"><input id="chatInput" maxlength="180" placeholder="اكتب رسالة..."><button> SEND </button></form>
-  </aside>
-
-  <div id="mobile" class="mobile hidden">
-    <div class="move"><button data-m="forward">▲</button><button data-m="left">◀</button><button data-m="back">▼</button><button data-m="right">▶</button></div>
-    <div class="act"><button data-a="fire">FIRE</button><button data-a="mine">MINE</button><button data-a="build">BUILD</button><button data-a="jump">JUMP</button></div>
-  </div>
-
-  <section id="death" class="overlay hidden"><div class="panel center"><small>WORLD SIGNAL LOST</small><h1 id="deathTitle">YOU FELL.</h1><p id="deathText"></p><button id="respawn">RESPAWN</button><button id="backMenu">MAIN MENU</button></div></section>
+</section>
+<div id="root" class="hidden"></div>
+<div id="hud" class="hidden">
+  <div class="bars"><label>HP<i><b id="hp"></b></i></label><label>HUNGER<i><b id="hunger"></b></i></label><label>SHIELD<i><b id="shield"></b></i></label></div>
+  <div class="top"><span id="mode">SURVIVAL</span><b id="objective">EXPLORE • GATHER • FORTIFY</b><span id="clock">DAY 1 • 08:00</span></div>
+  <div id="crosshair">+</div><div id="hotbar"></div>
+  <button id="chatBtn">CHAT</button>
 </div>
-<script type="module" src="./game.js"></script>
-<script type="module" src="./chat.js"></script>
-<script>
-if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
-</script>
-</body></html>
+<aside id="chat" class="hidden"><header>EX™ GLOBAL CHAT <button id="closeChat">×</button></header><div id="messages"></div><form id="chatForm"><input id="chatInput" maxlength="180" placeholder="اكتب رسالة..."><button>SEND</button></form></aside>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

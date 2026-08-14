@@ -1,5 +1,7 @@
 {
   "gameId": "EX_ALJAZIRA",
   "repository": "ex-experience/aljazira",
-  "build": "production-mvp-v1"
+  "build": "MAX_TECH_V2",
+  "renderer": "Three.js WebGPURenderer with WebGL2 fallback",
+  "chunkSize": 16
 }
