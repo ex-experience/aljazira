@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /GlobalChat/{id} {
+      allow read: if request.auth != null;
+      allow write: if false; // writes only through Cloud Function / Admin SDK
+    }
+    match /ChatRate/{id} { allow read, write: if false; }
+  }
+}

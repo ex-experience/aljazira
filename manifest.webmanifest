@@ -1,0 +1,10 @@
+{
+  "name": "EX ALJAZIRA",
+  "short_name": "ALJAZIRA",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#061316",
+  "theme_color": "#061316"
+}

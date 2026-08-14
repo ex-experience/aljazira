@@ -1,0 +1,9 @@
+{
+  "enabled": false,
+  "firebase": {
+    "apiKey": "REPLACE_WITH_FIREBASE_WEB_CONFIG",
+    "authDomain": "REPLACE.firebaseapp.com",
+    "projectId": "REPLACE",
+    "appId": "REPLACE"
+  }
+}
