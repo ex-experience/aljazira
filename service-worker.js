@@ -1,58 +1,13 @@
-const CACHE='ex-aljazira-rc3-minimal-20260813';
-const CORE=[
-  './','./index.html','./bootstrap.js','./game.js','./manifest.webmanifest',
-  './assets/icon-192.png','./assets/icon-512.png','./version.json',
-  './menu-ui.js','./assets/menu-cover.webp','./assets/menu-cover.jpg'
-];
-
-self.addEventListener('install',event=>{
-  event.waitUntil((async()=>{
-    const cache=await caches.open(CACHE);
-    await Promise.allSettled(CORE.map(async url=>{
-      const res=await fetch(url,{cache:'reload'});
-      if(res.ok) await cache.put(url,res.clone());
-    }));
-    await self.skipWaiting();
-  })());
-});
-
-self.addEventListener('activate',event=>{
-  event.waitUntil((async()=>{
-    const keys=await caches.keys();
-    await Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)));
-    await self.clients.claim();
-  })());
-});
-
-self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET') return;
-  const url=new URL(event.request.url);
-
-  if(url.origin===location.origin){
-    event.respondWith((async()=>{
-      try{
-        const res=await fetch(event.request,{cache:'no-store'});
-        if(res.ok){
-          const cache=await caches.open(CACHE);
-          cache.put(event.request,res.clone());
-        }
-        return res;
-      }catch(err){
-        return (await caches.match(event.request)) ||
-               (event.request.mode==='navigate' ? await caches.match('./index.html') : Response.error());
-      }
-    })());
+const CACHE="ex-signal-run-mvp-rc1-v1";
+const CORE=["./","./index.html","./style.css","./game.js","./ads-engine.js","./campaigns.json","./manifest.webmanifest"];
+self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
+self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener("fetch",e=>{
+  if(e.request.method!=="GET")return;
+  const u=new URL(e.request.url);
+  if(u.pathname.endsWith("/campaigns.json")){
+    e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put(e.request,c));return r}).catch(()=>caches.match(e.request)));
     return;
   }
-
-  if(url.hostname==='cdn.jsdelivr.net'){
-    event.respondWith((async()=>{
-      const cache=await caches.open(CACHE);
-      const cached=await cache.match(event.request);
-      if(cached) return cached;
-      const res=await fetch(event.request);
-      if(res.ok) cache.put(event.request,res.clone());
-      return res;
-    })());
-  }
+  e.respondWith(caches.match(e.request).then(cached=>cached||fetch(e.request).then(r=>{if(r.ok&&u.origin===location.origin){const c=r.clone();caches.open(CACHE).then(x=>x.put(e.request,c))}return r})));
 });

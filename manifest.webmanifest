@@ -1,27 +1,10 @@
 {
-  "name": "EX™ ALJAZIRA — Survival Voxel World",
-  "short_name": "ALJAZIRA",
+  "name": "EX™ SIGNAL RUN",
+  "short_name": "SIGNAL RUN",
   "start_url": "./",
   "display": "fullscreen",
-  "background_color": "#0b0d0c",
-  "theme_color": "#0b0d0c",
-  "description": "Build. Survive. Defend a living Arabian voxel world.",
-  "scope": "./",
-  "orientation": "any",
-  "lang": "ar",
-  "dir": "rtl",
-  "icons": [
-    {
-      "src": "./assets/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./assets/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+  "background_color": "#050909",
+  "theme_color": "#050909",
+  "description": "CHASE • DRIVE • ESCAPE — EX™ playable browser game",
+  "icons": []
 }

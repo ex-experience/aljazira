@@ -2,670 +2,151 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#0b0d0c" />
-  <title>EX™ ALJAZIRA — Survival Voxel World</title>
-  <meta name="description" content="EX™ ALJAZIRA — Saudi-born survival, building and combat voxel world by フサム | experience™." />
-  <meta name="application-name" content="EX™ ALJAZIRA" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta property="og:title" content="EX™ ALJAZIRA" />
-  <meta property="og:description" content="Build. Survive. Defend a living Arabian voxel world." />
-  <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="preload" as="image" href="./assets/menu-cover.webp" type="image/webp">
-  <meta property="og:image" content="./assets/menu-cover.jpg" />
-  <meta name="twitter:image" content="./assets/menu-cover.jpg" />
-  <style>
-    :root{
-      --ink:#0b0d0c; --paper:#f0ede5; --sand:#c79f67; --mint:#69f0c8; --red:#7d2733;
-      --glass:rgba(9,11,10,.70); --line:rgba(255,255,255,.16);
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink);font-family:Inter,Arial,sans-serif;color:white;touch-action:none;overscroll-behavior:none;-webkit-user-select:none;user-select:none}
-    canvas{display:block;position:fixed;inset:0}
-    #ui{position:fixed;inset:0;pointer-events:none}
-    #topbar{position:absolute;top:max(14px,env(safe-area-inset-top));left:18px;right:18px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-    .glass{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 12px 40px rgba(0,0,0,.28)}
-    #brand{padding:12px 15px;border-radius:14px;line-height:1.1;min-width:220px}
-    #brand b{display:block;font-size:18px;letter-spacing:.18em}
-    #brand small{display:block;margin-top:6px;color:#b8c0bd;letter-spacing:.08em}
-    #status{padding:10px 13px;border-radius:12px;text-align:left;direction:ltr;min-width:210px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}
-    #status span{color:var(--mint)}
-    #cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%)}
-    #cross:before,#cross:after{content:"";position:absolute;background:rgba(255,255,255,.86);box-shadow:0 0 5px rgba(255,255,255,.35)}
-    #cross:before{left:8px;top:1px;width:2px;height:16px} #cross:after{top:8px;left:1px;height:2px;width:16px}
-    #objective{position:absolute;top:92px;left:50%;transform:translateX(-50%);padding:11px 18px;border-radius:13px;text-align:center;min-width:min(620px,86vw)}
-    #objective b{color:var(--mint);font-size:12px;letter-spacing:.15em}
-    #objective div{font-size:14px;margin-top:4px}
-    #hotbar{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;gap:6px;padding:7px;border-radius:16px;direction:ltr}
-    .slot{pointer-events:auto;touch-action:none;width:56px;height:56px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.32);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:#ddd}
-    .slot.sel{border-color:var(--mint);box-shadow:0 0 0 2px rgba(105,240,200,.18) inset}
-    .cube{width:22px;height:22px;border-radius:4px;margin-bottom:3px;border:1px solid rgba(255,255,255,.28)}
-    #hint{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);padding:8px 13px;border-radius:10px;font-size:12px;color:#e5e5e5;white-space:nowrap}
-    #intro{position:fixed;inset:0;background:
-      radial-gradient(circle at 65% 28%,rgba(108,89,51,.22),transparent 30%),
-      linear-gradient(160deg,#0b0d0c,#15130f 70%,#0b0d0c);z-index:10;display:flex;align-items:center;justify-content:center;padding:24px}
-    .card{max-width:840px;width:100%;padding:40px;border-radius:24px;position:relative;overflow:hidden}
-    .card:before{content:"";position:absolute;left:0;top:0;width:6px;height:100%;background:var(--mint)}
-    .eyebrow{color:var(--mint);letter-spacing:.22em;font:12px ui-monospace,monospace}
-    h1{font-size:clamp(42px,7vw,88px);line-height:.85;margin:18px 0 22px;letter-spacing:-.05em}
-    .lead{font-size:clamp(17px,2vw,24px);line-height:1.65;color:#ddd;max-width:720px}
-    .quote{margin:24px 0;padding:16px 18px;border-right:3px solid var(--red);background:rgba(255,255,255,.035);font-size:18px}
-    #start{pointer-events:auto;cursor:pointer;border:0;border-radius:13px;background:var(--mint);color:#07100d;font-weight:800;padding:15px 24px;font-size:16px;margin-top:8px}
-    .fine{font-size:11px;color:#8d9591;margin-top:18px}
-    #pause{position:fixed;inset:0;background:rgba(4,5,5,.72);backdrop-filter:blur(10px);display:none;z-index:8;align-items:center;justify-content:center;text-align:center}
-    #pause h2{font-size:42px;margin:0 0 8px}
-    #mobile{display:none;position:fixed;inset:0;pointer-events:none;z-index:6}
-    .pad{pointer-events:auto;touch-action:none;position:absolute;bottom:24px;width:122px;height:122px;border-radius:50%;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 0 28px rgba(255,255,255,.025)}
-    #movePad{left:18px} #lookPad{right:18px}
-    .action{pointer-events:auto;touch-action:none;position:absolute;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);font-weight:700;-webkit-tap-highlight-color:transparent}.pad .knob{position:absolute;left:50%;top:50%;width:48px;height:48px;border-radius:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);box-shadow:0 5px 18px rgba(0,0,0,.25);pointer-events:none}
-    #jumpBtn{right:35px;bottom:165px} #breakBtn{right:104px;bottom:125px} #placeBtn{right:168px;bottom:80px}
-    @media(max-width:820px),(pointer:coarse){#mobile{display:block} #status{min-width:145px;font-size:10px}.slot{width:42px;height:42px}.cube{width:17px;height:17px}#hint{display:none}}
-  
-#combatHud{position:fixed;left:22px;bottom:112px;z-index:10;width:min(360px,46vw);pointer-events:none}.meter{height:8px;background:#0008;border:1px solid #ffffff28;margin-top:6px;overflow:hidden}.meter>i{display:block;height:100%;width:100%;background:#67f0c7}.armor i{background:#a8c7ff}.energy i{background:#e8bd67}#weaponHud{position:fixed;right:22px;bottom:112px;z-index:10;text-align:right;background:#0008;border:1px solid #ffffff22;padding:12px 14px;pointer-events:none}#ammo{font:800 26px monospace}#weaponName{font:600 11px monospace;letter-spacing:.12em;color:#67f0c7}#crosshair{position:fixed;left:50%;top:50%;width:20px;height:20px;transform:translate(-50%,-50%);z-index:9;pointer-events:none}#crosshair:before,#crosshair:after{content:"";position:absolute;background:#fff}#crosshair:before{left:9px;top:2px;width:2px;height:16px}#crosshair:after{top:9px;left:2px;height:2px;width:16px}#hitFlash{position:fixed;inset:0;z-index:50;pointer-events:none;transition:background .08s}#missionBanner{position:fixed;left:50%;top:15%;transform:translateX(-50%);z-index:30;text-align:center;font:700 14px monospace;letter-spacing:.12em;background:#000c;border:1px solid #67f0c755;padding:12px 18px;opacity:0;transition:opacity .3s;pointer-events:none}#modeBadge{position:fixed;right:18px;top:18px;z-index:12;font:700 11px monospace;background:#0008;padding:8px 10px}.fire{right:24px!important;bottom:170px!important;background:#781412aa!important;width:70px!important;height:70px!important}.reload{right:100px!important;bottom:132px!important}.swap{right:100px!important;bottom:205px!important}@media(max-width:820px),(pointer:coarse){#combatHud{left:12px;bottom:158px;width:42vw;font-size:10px}#weaponHud{right:12px;bottom:300px;padding:8px 10px}#ammo{font-size:20px}}
-
-    .menuRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .secondary{pointer-events:auto;cursor:pointer;border:1px solid rgba(255,255,255,.2);border-radius:13px;background:rgba(255,255,255,.06);color:#fff;font-weight:700;padding:13px 18px;font-size:14px}
-    #saveState{margin-top:10px;color:#9fe9d2;font:11px ui-monospace,monospace}
-    #saveToast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:70;padding:8px 12px;border-radius:10px;background:#07100ddd;border:1px solid #69f0c855;font:11px ui-monospace,monospace;opacity:0;transition:opacity .25s;pointer-events:none}
-    #fatal{display:none;position:fixed;inset:0;z-index:100;background:#080909f2;color:white;padding:28px;align-items:center;justify-content:center;text-align:center}
-    #fatal .fatalCard{max-width:650px;background:#161818;border:1px solid #ffffff22;padding:28px;border-radius:18px}
-    #fatal code{display:block;direction:ltr;text-align:left;white-space:pre-wrap;color:#ffb9b9;margin-top:14px;font-size:11px}
-    #pause .pauseCard{min-width:min(420px,88vw);padding:30px;border-radius:20px}
-    #pause .menuRow{justify-content:center}
-    #resumeBtn,#saveBtn,#resetBtn{pointer-events:auto}
-    #buildTag{position:fixed;left:12px;top:12px;z-index:15;font:9px ui-monospace,monospace;color:#aab3af;background:#0007;padding:5px 7px;border:1px solid #ffffff15}
-    #mobile .fire{right:24px;bottom:176px;background:#7d2733cc;width:72px;height:72px}
-    #mobile .reload{right:105px;bottom:135px}
-    #mobile .swap{right:105px;bottom:210px}
-
-
-    /* ===== RC2 COVER MENU ===== */
-    body:not(.in-game) canvas,
-    body:not(.in-game) #ui,
-    body:not(.in-game) #pause,
-    body:not(.in-game) #crosshair,
-    body:not(.in-game) #hitFlash,
-    body:not(.in-game) #modeBadge,
-    body:not(.in-game) #missionBanner,
-    body:not(.in-game) #combatHud,
-    body:not(.in-game) #weaponHud,
-    body:not(.in-game) #mobile,
-    body:not(.in-game) #buildTag,
-    body:not(.in-game) #saveToast{
-      opacity:0!important;
-      visibility:hidden!important;
-      pointer-events:none!important;
-    }
-
-    #intro{
-      position:fixed;
-      inset:0;
-      z-index:90;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:0;
-      overflow:hidden;
-      background:#050a0a;
-      isolation:isolate;
-    }
-    #intro::before{
-      content:"";
-      position:absolute;
-      inset:-40px;
-      z-index:-2;
-      background:
-        linear-gradient(rgba(2,9,10,.36),rgba(2,9,10,.58)),
-        url("./assets/menu-cover.webp") center/cover no-repeat;
-      filter:blur(22px) saturate(.95);
-      transform:scale(1.08);
-    }
-    #intro::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      z-index:-1;
-      pointer-events:none;
-      background:
-        radial-gradient(circle at 50% 48%,transparent 28%,rgba(0,0,0,.16) 68%,rgba(0,0,0,.55) 100%),
-        linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.24));
-    }
-    #intro.intro-exit{
-      opacity:0;
-      transform:scale(1.018);
-      transition:opacity .34s ease,transform .38s ease;
-      pointer-events:none;
-    }
-
-    #coverFrame{
-      position:relative;
-      width:min(100vw,calc(100svh * 1122 / 1402));
-      aspect-ratio:1122/1402;
-      flex:0 0 auto;
-      filter:drop-shadow(0 18px 60px rgba(0,0,0,.55));
-    }
-    #coverFrame picture,
-    #coverFrame img{
-      display:block;
-      width:100%;
-      height:100%;
-    }
-    #coverFrame img{
-      object-fit:contain;
-      object-position:center;
-      pointer-events:none;
-      -webkit-user-drag:none;
-    }
-
-    .menuHotspot{
-      position:absolute;
-      appearance:none;
-      -webkit-appearance:none;
-      border:1px solid transparent;
-      background:transparent;
-      color:transparent;
-      font-size:0;
-      padding:0;
-      margin:0;
-      z-index:5;
-      cursor:pointer;
-      border-radius:14px;
-      touch-action:manipulation;
-      -webkit-tap-highlight-color:transparent;
-      outline:none;
-    }
-    .menuHotspot::after{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      border-radius:inherit;
-      opacity:0;
-      border:2px solid rgba(75,245,246,.92);
-      box-shadow:
-        0 0 0 2px rgba(3,17,20,.46) inset,
-        0 0 18px rgba(39,232,238,.55),
-        0 0 42px rgba(39,232,238,.24);
-      transition:opacity .14s ease,transform .14s ease;
-    }
-    .menuHotspot:hover::after,
-    .menuHotspot:focus-visible::after,
-    .menuHotspot.pressed::after{
-      opacity:1;
-      transform:scale(1.012);
-    }
-    .menuHotspot:active{transform:scale(.988)}
-
-    /* Hotspots aligned to the baked RC2 artwork (1122 x 1402). */
-    #start{left:24.25%;top:65.55%;width:49.0%;height:6.75%}
-    #newWorld{left:26.15%;top:73.15%;width:45.1%;height:4.35%}
-    #howToPlay{left:25.65%;top:78.30%;width:23.4%;height:4.25%}
-    #settingsBtn{left:50.45%;top:78.30%;width:23.1%;height:4.25%}
-
-    .modeHotspot{top:84.35%;height:7.7%;width:10.6%;border-radius:18px}
-    #modeOpen{left:25.8%}
-    #modeSurvival{left:38.8%}
-    #modeCreative{left:51.8%}
-    #modeCombat{left:64.8%}
-
-    #saveState{
-      position:absolute;
-      left:50%;
-      bottom:1.2%;
-      transform:translateX(-50%);
-      width:72%;
-      text-align:center;
-      color:rgba(189,255,244,.84);
-      font:9px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;
-      letter-spacing:.06em;
-      z-index:6;
-      text-shadow:0 2px 8px #000;
-      pointer-events:none;
-    }
-
-    .menuModal{
-      position:fixed;
-      inset:0;
-      z-index:120;
-      display:none;
-      place-items:center;
-      padding:18px;
-      background:rgba(0,7,9,.72);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-    }
-    .menuModal.open{display:grid}
-    .menuPanel{
-      position:relative;
-      width:min(560px,94vw);
-      max-height:min(720px,88svh);
-      overflow:auto;
-      border-radius:22px;
-      padding:24px;
-      background:
-        linear-gradient(180deg,rgba(7,23,27,.96),rgba(4,12,15,.98));
-      border:1px solid rgba(84,241,241,.36);
-      box-shadow:0 22px 80px rgba(0,0,0,.55),0 0 45px rgba(0,229,232,.10);
-      direction:rtl;
-    }
-    .menuPanel h2{
-      margin:0 0 8px;
-      font-size:24px;
-      letter-spacing:.02em;
-    }
-    .menuPanel .kicker{
-      color:#55f0e7;
-      font:11px ui-monospace,SFMono-Regular,Consolas,monospace;
-      letter-spacing:.15em;
-      direction:ltr;
-      text-align:left;
-    }
-    .menuPanel p,.menuPanel li{color:#d8dfdd;line-height:1.8;font-size:14px}
-    .menuPanel ul{padding-right:22px}
-    .closeModal{
-      position:absolute;
-      top:14px;
-      left:14px;
-      width:40px;height:40px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(255,255,255,.06);
-      color:#fff;
-      cursor:pointer;
-      font-size:18px;
-    }
-    .qualityGrid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:8px;
-      margin-top:16px;
-      direction:ltr;
-    }
-    .qualityBtn{
-      min-height:56px;
-      border-radius:13px;
-      border:1px solid rgba(255,255,255,.15);
-      background:rgba(255,255,255,.05);
-      color:#fff;
-      cursor:pointer;
-      font-weight:800;
-    }
-    .qualityBtn.active{
-      border-color:#57eee5;
-      background:rgba(57,226,218,.13);
-      box-shadow:0 0 20px rgba(57,226,218,.12);
-      color:#7bfff5;
-    }
-    .menuAction{
-      width:100%;
-      margin-top:12px;
-      min-height:48px;
-      border:1px solid rgba(72,238,231,.5);
-      border-radius:13px;
-      background:rgba(46,224,215,.12);
-      color:#dffffc;
-      font-weight:800;
-      cursor:pointer;
-    }
-    .modeTitle{color:#61f4ea;font-weight:900}
-    .srOnly{
-      position:absolute!important;
-      width:1px!important;height:1px!important;
-      padding:0!important;margin:-1px!important;
-      overflow:hidden!important;clip:rect(0,0,0,0)!important;
-      white-space:nowrap!important;border:0!important;
-    }
-
-    @media (max-width:600px){
-      #coverFrame{
-        width:100vw;
-        max-height:100svh;
-      }
-      .menuHotspot::after{border-width:1px}
-      #saveState{font-size:7.5px;bottom:.8%;width:82%}
-      .menuPanel{padding:22px 18px}
-    }
-
-    @media (prefers-reduced-motion:reduce){
-      #intro.intro-exit,.menuHotspot::after{transition:none!important}
-    }
-
-
-/* =========================================================
-   EX™ ALJAZIRA RC3 — CINEMATIC MINIMAL HUD
-   The world is the interface.
-   ========================================================= */
-
-/* START SCREEN: no duplicate UI over baked key art */
-#intro{
-  background:#020607!important;
-  padding:0!important;
-}
-#intro::before{
-  inset:-24px!important;
-  filter:blur(28px) brightness(.40) saturate(.92)!important;
-  background:
-    linear-gradient(rgba(2,7,8,.22),rgba(2,7,8,.32)),
-    url("./assets/menu-cover.webp") center/cover no-repeat!important;
-}
-#intro::after{
-  background:
-    linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.03) 66%,rgba(0,0,0,.24) 100%)!important;
-}
-#coverFrame{
-  height:100svh!important;
-  width:auto!important;
-  max-width:none!important;
-  aspect-ratio:1122/1402!important;
-  filter:none!important;
-}
-#coverFrame picture,#coverFrame img{width:100%!important;height:100%!important}
-#coverFrame img{object-fit:fill!important}
-
-/* Make the baked cover buttons the only visible UI:
-   HTML hit targets remain real and clickable, but visually invisible. */
-.menuHotspot{
-  background:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
-  outline:0!important;
-}
-.menuHotspot::before,.menuHotspot::after{display:none!important}
-#saveState{display:none!important}
-
-/* GAME: remove information walls */
-body.in-game #topbar,
-body.in-game #objective,
-body.in-game #hint,
-body.in-game #modeBadge,
-body.in-game #buildTag,
-body.in-game #cross{
-  display:none!important;
-}
-
-/* Tiny, quiet crosshair */
-#crosshair{
-  width:8px!important;height:8px!important;
-  opacity:.68!important;
-}
-#crosshair::before{
-  left:3.5px!important;top:0!important;
-  width:1px!important;height:8px!important;
-  background:rgba(255,255,255,.92)!important;
-  box-shadow:none!important;
-}
-#crosshair::after{
-  left:0!important;top:3.5px!important;
-  height:1px!important;width:8px!important;
-  background:rgba(255,255,255,.92)!important;
-  box-shadow:none!important;
-}
-
-/* Health / armor / energy = three silent bars only */
-#combatHud{
-  position:fixed!important;
-  left:max(14px,env(safe-area-inset-left))!important;
-  top:max(14px,env(safe-area-inset-top))!important;
-  bottom:auto!important;
-  width:74px!important;
-  padding:0!important;
-  background:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
-  display:flex!important;
-  flex-direction:column!important;
-  gap:5px!important;
-  opacity:.78!important;
-}
-#combatHud>div:not(.meter){display:none!important}
-#combatHud .meter{
-  height:3px!important;
-  margin:0!important;
-  border:0!important;
-  border-radius:99px!important;
-  background:rgba(255,255,255,.10)!important;
-  overflow:hidden!important;
-}
-#combatHud .meter>i{border-radius:99px!important}
-
-/* Weapon HUD = ammo only */
-#weaponHud{
-  position:fixed!important;
-  right:max(14px,env(safe-area-inset-right))!important;
-  top:max(13px,env(safe-area-inset-top))!important;
-  bottom:auto!important;
-  padding:0!important;
-  background:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
-  text-shadow:0 2px 12px rgba(0,0,0,.85)!important;
-}
-#weaponName,#weaponHud small{display:none!important}
-#ammo{
-  font:700 15px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
-  color:rgba(255,255,255,.88)!important;
-}
-
-/* Mission messages only appear briefly and quietly */
-#missionBanner{
-  top:max(17px,env(safe-area-inset-top))!important;
-  max-width:62vw!important;
-  padding:6px 10px!important;
-  border:0!important;
-  border-radius:999px!important;
-  background:rgba(2,8,9,.30)!important;
-  backdrop-filter:blur(9px)!important;
-  -webkit-backdrop-filter:blur(9px)!important;
-  font:700 9px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace!important;
-  letter-spacing:.05em!important;
-  color:rgba(255,255,255,.90)!important;
-}
-
-/* Damage is an edge vignette, not a red screen */
-#hitFlash{
-  background:transparent!important;
-  opacity:0;
-  transition:opacity .12s ease!important;
-  box-shadow:inset 0 0 72px rgba(140,0,0,.52);
-}
-#hitFlash.active{opacity:1}
-
-/* Materials are hidden until requested */
-#materialsToggle{
-  display:none;
-  position:fixed;
-  z-index:18;
-  left:50%;
-  bottom:calc(15px + env(safe-area-inset-bottom));
-  transform:translateX(-50%);
-  width:42px;height:42px;
-  border-radius:13px;
-  border:1px solid rgba(255,255,255,.13);
-  background:rgba(2,8,9,.30);
-  color:rgba(255,255,255,.82);
-  font-size:17px;
-  backdrop-filter:blur(9px);
-  -webkit-backdrop-filter:blur(9px);
-  touch-action:manipulation;
-}
-
-/* Desktop hotbar: quiet until hover */
-@media(min-width:821px) and (pointer:fine){
-  body.in-game #hotbar{
-    opacity:.18;
-    transition:opacity .18s ease;
-    background:rgba(0,0,0,.15)!important;
-    border-color:transparent!important;
-  }
-  body.in-game #hotbar:hover{opacity:.95}
-}
-
-/* MOBILE: clean thumb controls */
-@media(max-width:820px),(pointer:coarse){
-  body.in-game #materialsToggle{display:block}
-  body.in-game #hotbar{
-    display:none!important;
-    bottom:calc(66px + env(safe-area-inset-bottom))!important;
-    padding:5px!important;
-    gap:4px!important;
-    background:rgba(2,8,9,.48)!important;
-    border:1px solid rgba(255,255,255,.10)!important;
-    border-radius:14px!important;
-  }
-  body.in-game.materials-open #hotbar{display:flex!important}
-  #hotbar .slot{
-    width:38px!important;height:38px!important;
-    font-size:0!important;
-    border-radius:8px!important;
-    background:rgba(255,255,255,.04)!important;
-  }
-  #hotbar .cube{width:18px!important;height:18px!important;margin:0!important}
-
-  #mobile{z-index:15!important}
-
-  #movePad{
-    left:18px!important;
-    bottom:calc(22px + env(safe-area-inset-bottom))!important;
-    width:108px!important;height:108px!important;
-    background:rgba(0,0,0,.12)!important;
-    border:1px solid rgba(255,255,255,.09)!important;
-  }
-  #movePad .knob{
-    width:42px!important;height:42px!important;
-    background:rgba(255,255,255,.12)!important;
-    border:1px solid rgba(255,255,255,.12)!important;
-  }
-
-  /* Right side = invisible look surface */
-  #lookPad{
-    right:0!important;bottom:0!important;
-    width:55vw!important;height:70vh!important;
-    border:0!important;border-radius:0!important;
-    background:transparent!important;
-    box-shadow:none!important;
-  }
-  #lookPad .knob{display:none!important}
-
-  .action{
-    width:42px!important;height:42px!important;
-    background:rgba(2,8,9,.28)!important;
-    border:1px solid rgba(255,255,255,.11)!important;
-    color:rgba(255,255,255,.84)!important;
-    font:500 18px/1 Arial!important;
-    backdrop-filter:blur(8px)!important;
-    -webkit-backdrop-filter:blur(8px)!important;
-  }
-
-  #fireBtn{
-    right:20px!important;
-    bottom:calc(38px + env(safe-area-inset-bottom))!important;
-    width:64px!important;height:64px!important;
-    background:rgba(2,10,11,.36)!important;
-    border:1px solid rgba(98,241,223,.34)!important;
-    color:#8efff0!important;
-    font-size:25px!important;
-  }
-  #jumpBtn{right:28px!important;bottom:calc(116px + env(safe-area-inset-bottom))!important;width:46px!important;height:46px!important}
-  #reloadBtn{right:88px!important;bottom:calc(87px + env(safe-area-inset-bottom))!important}
-  #swapBtn{right:88px!important;bottom:calc(38px + env(safe-area-inset-bottom))!important}
-  #breakBtn{right:138px!important;bottom:calc(87px + env(safe-area-inset-bottom))!important}
-  #placeBtn{right:138px!important;bottom:calc(38px + env(safe-area-inset-bottom))!important}
-
-  #combatHud{width:66px!important}
-}
-
-</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#050909" />
+  <meta name="description" content="EX™ SIGNAL RUN — production-ready browser chase game MVP" />
+  <meta name="color-scheme" content="dark" />
+  <title>EX™ SIGNAL RUN — CHASE • DRIVE • ESCAPE</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div id="intro" aria-label="EX ALJAZIRA game menu">
-  <div id="coverFrame">
-    <picture>
-      <source srcset="./assets/menu-cover.webp" type="image/webp">
-      <img src="./assets/menu-cover.jpg" alt="EX ALJAZIRA — Build, Survive, Defend the Island" width="1122" height="1402" fetchpriority="high">
-    </picture>
+  <div id="app">
+    <canvas id="game" aria-label="EX Signal Run"></canvas>
 
-    <button id="start" class="menuHotspot" aria-label="Continue world"><span class="srOnly">CONTINUE // تابع العالم</span></button>
-    <button id="newWorld" class="menuHotspot" aria-label="Create new world"><span class="srOnly">NEW WORLD // عالم جديد</span></button>
-    <button id="howToPlay" class="menuHotspot" aria-label="How to play"><span class="srOnly">HOW TO PLAY // طريقة اللعب</span></button>
-    <button id="settingsBtn" class="menuHotspot" aria-label="Settings"><span class="srOnly">SETTINGS // الإعدادات</span></button>
+    <section id="menu" class="screen active">
+      <div class="menu-art"></div>
+      <div class="scanlines"></div>
+      <div class="menu-shell">
+        <div class="eyebrow">フサム | experience™ — presents</div>
+        <div class="version">MVP / PRODUCTION RC1</div>
+        <h1><span>EX™</span> SIGNAL RUN</h1>
+        <p class="tag">CHASE • DRIVE • ESCAPE</p>
+        <p class="story">مدينة الإشارة انهارت. قد الـHUMMER، اخترق البوابات، أسقط الدرونز، وارفع الـCOMBO قبل أن يصل BLACK NODE إليك.</p>
 
-    <button id="modeOpen" class="menuHotspot modeHotspot" aria-label="Open world information"><span class="srOnly">OPEN WORLD</span></button>
-    <button id="modeSurvival" class="menuHotspot modeHotspot" aria-label="Survival information"><span class="srOnly">SURVIVAL</span></button>
-    <button id="modeCreative" class="menuHotspot modeHotspot" aria-label="Creative information"><span class="srOnly">CREATIVE</span></button>
-    <button id="modeCombat" class="menuHotspot modeHotspot" aria-label="Combat information"><span class="srOnly">COMBAT</span></button>
+        <div class="player-strip">
+          <div><small>LEVEL</small><b id="menuLevel">01</b></div>
+          <div><small>BEST</small><b id="menuBest">000000</b></div>
+          <div><small>CREDITS</small><b id="menuCredits">0</b></div>
+        </div>
 
-    <div id="saveState">CHECKING LOCAL WORLD...</div>
-  </div>
-</div>
+        <div class="menu-actions">
+          <button id="startBtn" class="primary">ابدأ SIGNAL RUN</button>
+          <button id="dailyBtn" class="secondary">DAILY CONTRACT</button>
+          <button id="howBtn" class="ghost">طريقة اللعب</button>
+        </div>
 
-<div id="helpModal" class="menuModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-  <div class="menuPanel">
-    <button class="closeModal" data-close="helpModal" aria-label="Close">×</button>
-    <div class="kicker">EXPERIENCE 003 // FIELD GUIDE</div>
-    <h2 id="helpTitle">طريقة اللعب // HOW TO PLAY</h2>
-    <ul>
-      <li><b>الكمبيوتر:</b> WASD للحركة، SHIFT للركض، SPACE للقفز.</li>
-      <li><b>القتال:</b> Left Click للإطلاق، R لإعادة التعبئة، Q لتبديل السلاح، F للتحصين.</li>
-      <li><b>البناء:</b> Middle Click لتكسير الكتلة، Right Click للبناء، والأرقام 1–7 لاختيار الخامة.</li>
-      <li><b>الجوال:</b> العصا اليسرى للحركة، اليمنى للنظر، مع FIRE / R / Q والقفز والبناء والتكسير.</li>
-      <li>العالم يحفظ تقدمك محليًا تلقائيًا على هذا الجهاز.</li>
-    </ul>
-    <button class="menuAction" data-close="helpModal">فهمت // READY</button>
-  </div>
-</div>
+        <div id="menuSponsor" class="sponsor-card" hidden>
+          <span>MISSION PARTNER</span>
+          <b></b>
+          <small></small>
+          <button type="button">عرض الشريك</button>
+        </div>
 
-<div id="settingsModal" class="menuModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-  <div class="menuPanel">
-    <button class="closeModal" data-close="settingsModal" aria-label="Close">×</button>
-    <div class="kicker">DISPLAY // PERFORMANCE</div>
-    <h2 id="settingsTitle">الإعدادات // SETTINGS</h2>
-    <p>اختر مستوى الرسوم. سيتم حفظ الاختيار على جهازك ويُطبق عند بدء/إعادة تحميل العالم.</p>
-    <div class="qualityGrid">
-      <button class="qualityBtn" data-quality="performance">PERFORMANCE</button>
-      <button class="qualityBtn" data-quality="balanced">BALANCED</button>
-      <button class="qualityBtn" data-quality="high">HIGH</button>
+        <div class="micro">Mobile-first • لا إعلانات تقطع اللعب • الإعلانات داخل العالم + Rewarded اختياري</div>
+      </div>
+    </section>
+
+    <section id="how" class="screen modal-screen">
+      <div class="modal">
+        <div class="eyebrow">CONTROL BRIEF</div>
+        <h2>طريقة اللعب</h2>
+        <div class="how-grid">
+          <div><kbd>◀ / A</kbd><span>مسار يسار</span></div>
+          <div><kbd>▶ / D</kbd><span>مسار يمين</span></div>
+          <div><kbd>SPACE</kbd><span>قفزة / تفادي</span></div>
+          <div><kbd>SHIFT</kbd><span>BOOST</span></div>
+          <div><kbd>J / F</kbd><span>Pulse Shot</span></div>
+          <div><kbd>P</kbd><span>Pause</span></div>
+        </div>
+        <p>اجمع SIGNAL SHARDS، مرّ من الـCHECKPOINTS، اقترب من العوائق بدون اصطدام لرفع الـNEAR MISS، وحافظ على الـCOMBO لأعلى Score.</p>
+        <button id="closeHow" class="primary">مفهوم</button>
+      </div>
+    </section>
+
+    <section id="brief" class="screen cinematic">
+      <img id="briefImg" src="assets/hummer_ext.webp" alt="Hummer mission" />
+      <div class="cinematic-vignette"></div>
+      <div class="cinematic-copy">
+        <div class="chapter">SIGNAL CONTRACT</div>
+        <h2 id="briefTitle">CITY BREACH</h2>
+        <p id="briefText">اهرب لمسافة 5 KM وابقَ داخل الإشارة.</p>
+        <div id="briefSponsor" class="sponsor-inline" hidden><span>POWERED BY</span><b></b></div>
+        <button id="briefGo" class="primary">GO</button>
+      </div>
+    </section>
+
+    <section id="result" class="screen result-screen">
+      <div class="result-card">
+        <div class="eyebrow">MISSION REPORT</div>
+        <h2 id="resultTitle">RUN COMPLETE</h2>
+        <div class="score-ring"><span id="resultScore">000000</span><small>SCORE</small></div>
+        <div id="resultStats" class="stats"></div>
+
+        <div class="reward-box">
+          <div>
+            <span>OPTIONAL REWARDED</span>
+            <b>+250 SIGNAL CREDITS</b>
+            <small>شاهد إعلانًا اختياريًا بعد الجولة — بدون إجبار وبدون مقاطعة اللعب.</small>
+          </div>
+          <button id="rewardBtn" class="reward">شاهد واحصل على المكافأة</button>
+        </div>
+
+        <div id="resultSponsor" class="sponsor-card compact" hidden>
+          <span>RUN PARTNER</span><b></b><small></small><button type="button">اكتشف</button>
+        </div>
+
+        <div class="menu-actions">
+          <button id="restartBtn" class="primary">إعادة اللعب</button>
+          <button id="menuBtn" class="ghost">القائمة الرئيسية</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="hud" class="hud hidden">
+      <div class="hud-left">
+        <div class="hud-meta"><b>EX-01</b><small id="stageLabel">SIGNAL CITY</small></div>
+        <div class="heat"><i id="heatBar"></i></div>
+      </div>
+      <div class="hud-center">
+        <span id="objective">DISTANCE 0 M</span>
+        <b id="comboText">COMBO x1.0</b>
+      </div>
+      <div class="hud-right">
+        <div class="bar"><i id="hpBar"></i></div><span id="hpText">100</span>
+        <div class="score" id="scoreText">000000</div>
+      </div>
     </div>
-    <button id="applySettings" class="menuAction">APPLY & RELOAD // تطبيق</button>
+
+    <div id="boostHud" class="boost-hud hidden"><span>BOOST</span><i><b id="boostBar"></b></i></div>
+    <div id="toast"></div>
+
+    <div id="worldAd" class="world-ad hidden" aria-hidden="true">
+      <span>SPONSORED SIGNAL</span><b></b><small></small>
+    </div>
+
+    <div id="touch" class="touch hidden" aria-label="touch controls">
+      <div class="touch-left">
+        <button data-key="left">◀</button>
+        <button data-key="right">▶</button>
+      </div>
+      <div class="touch-right">
+        <button data-key="boost">BOOST</button>
+        <button data-key="jump">JUMP</button>
+        <button data-key="fire" class="fire">FIRE</button>
+      </div>
+    </div>
+
+    <button id="pauseBtn" class="pause hidden" aria-label="pause">Ⅱ</button>
+    <button id="muteBtn" class="mute" aria-label="mute">◉</button>
   </div>
-</div>
 
-<div id="modeModal" class="menuModal" role="dialog" aria-modal="true" aria-labelledby="modeTitle">
-  <div class="menuPanel">
-    <button class="closeModal" data-close="modeModal" aria-label="Close">×</button>
-    <div class="kicker">WORLD SYSTEM</div>
-    <h2 id="modeTitle" class="modeTitle">ALJAZIRA</h2>
-    <p id="modeDescription"></p>
-    <button class="menuAction" data-close="modeModal">CLOSE // إغلاق</button>
-  </div>
-</div>
-
-<div id="buildTag">PRODUCTION RC1 // 2026.08</div><div id="saveToast">WORLD SAVED</div><div id="ui">
-  <div id="topbar">
-    <div id="brand" class="glass"><b>EX™ ALJAZIRA</b><small>ENGINEERING PLAYABLE WORLDS</small></div>
-    <div id="status" class="glass">SEED <span id="seed">2030</span><br>BIOME <span id="biome">NAJD</span><br>POS <span id="pos">0,0,0</span></div>
-  </div>
-  <div id="objective" class="glass"><b>FOUNDING MISSION // 001</b><div>اجمع 12 كتلة من الحجر، ثم ابنِ أول علامة في العالم.</div></div>
-  <div id="cross"></div>
-  <div id="hotbar" class="glass"></div>
-  <div id="hint" class="glass">انقر داخل العالم لالتقاط المؤشر · ESC لتحريره</div>
-</div>
-
-<div id="pause"><div class="pauseCard glass"><h2>PAUSED</h2><div>العالم محفوظ محليًا على هذا الجهاز.</div>
-<div class="menuRow"><button id="resumeBtn" class="secondary">RESUME</button><button id="saveBtn" class="secondary">SAVE NOW</button><button id="resetBtn" class="secondary">RESET WORLD</button></div></div></div>
-
-<div id="crosshair"></div><div id="hitFlash"></div><div id="modeBadge">SURVIVAL // THREAT ACTIVE</div><div id="missionBanner"></div><div id="combatHud"><div>HEALTH <span id="hpText">100</span></div><div class="meter"><i id="hpBar"></i></div><div>ARMOR <span id="armorText">50</span></div><div class="meter armor"><i id="armorBar"></i></div><div>ENERGY <span id="energyText">100</span></div><div class="meter energy"><i id="energyBar"></i></div></div><div id="weaponHud"><div id="weaponName">EX//ARC-7</div><div id="ammo">30 / 120</div><small>R RELOAD · Q SWAP · F FORTIFY</small></div><div id="mobile">
-  <div id="movePad" class="pad"><div class="knob"></div></div><div id="lookPad" class="pad"><div class="knob"></div></div>
-  <div id="jumpBtn" class="action">↑</div><div id="breakBtn" class="action">−</div><div id="placeBtn" class="action">＋</div>
-  <div id="fireBtn" class="action fire">FIRE</div><div id="reloadBtn" class="action reload">R</div><div id="swapBtn" class="action swap">Q</div>
-</div>
-
-<script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/"}}
-</script>
-<div id="fatal"><div class="fatalCard"><h2>تعذر تشغيل العالم</h2><p>أعد تحميل الصفحة أو جرّب متصفحًا حديثًا. إذا استمرت المشكلة أرسل نص الخطأ أدناه.</p><code id="fatalText"></code></div></div>
-<script src="./menu-ui.js?v=3.2.0-rc3" defer></script>
-<script type="module" src="./bootstrap.js?v=3.2.0-rc3"></script>
+  <script src="ads-engine.js"></script>
+  <script src="game.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
+    }
+  </script>
 </body>
 </html>
