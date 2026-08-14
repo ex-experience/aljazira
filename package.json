@@ -1,11 +1,9 @@
 {
-  "name": "ex-aljazira-functions",
-  "engines": {
-    "node": "20"
-  },
-  "main": "index.js",
-  "dependencies": {
-    "firebase-admin": "^12.7.0",
-    "firebase-functions": "^6.1.0"
+  "name": "ex-playable-worlds-max-tech-v2",
+  "private": true,
+  "scripts": {
+    "qa:arabia": "node ./arabiastrike/qa/smoke.mjs",
+    "qa:aljazira": "node ./aljazira/qa/smoke.mjs",
+    "qa": "npm run qa:arabia && npm run qa:aljazira"
   }
 }
